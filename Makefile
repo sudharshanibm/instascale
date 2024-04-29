@@ -5,7 +5,8 @@
 # my.domain/instascale-1-bundle:$VERSION and my.domain/instascale-1-catalog:$VERSION.
 IMAGE_TAG_BASE ?= quay.io/project-codeflare/instascale-controller
 
-ENGINE ?= "podman"
+ENGINE ?= "docker"
+PLATFORMS ?= linux/amd64,linux/s390x
 
 # USE_IMAGE_DIGESTS defines if images are resolved via tags or digests
 # You can enable this value if you would like to use SHA Based Digests
@@ -99,11 +100,11 @@ run: manifests generate fmt vet ## Run a controller from your host.
 
 .PHONY: image-build
 image-build: test ## Build container image with the manager.
-	$(ENGINE) build -t ${IMG} .
+	$(ENGINE) buildx build --platform=$(PLATFORMS) -t ${IMG} .
 
 .PHONY: image-push
 image-push: ## Push container image with the manager.
-	$(ENGINE) push ${IMG}
+	$(ENGINE) buildx build --platform=$(PLATFORMS) --push -t ${IMG} .
 
 ##@ Deployment
 

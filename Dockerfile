@@ -14,10 +14,11 @@ COPY main.go main.go
 COPY controllers/ controllers/
 COPY pkg/ pkg/
 
-# Build
-USER root
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o manager main.go
+# Build for TARGETARCH
+ARG TARGETARCH
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=${TARGETARCH} go build -o manager main.go
 
+# Final image
 FROM registry.access.redhat.com/ubi8/ubi-minimal:8.7
 WORKDIR /
 COPY --from=builder /workspace/manager .
